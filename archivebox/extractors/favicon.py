@@ -36,11 +36,13 @@ def save_favicon(link: Link, out_dir: Optional[Path]=None, timeout: int=TIMEOUT)
     cmd = [
         CURL_BINARY,
         *CURL_ARGS,
-        '--max-time', str(timeout),
-        '--output', str(output),
-        *(['--user-agent', '{}'.format(CURL_USER_AGENT)] if CURL_USER_AGENT else []),
+        '--max-time',
+        str(timeout),
+        '--output',
+        str(output),
+        *(['--user-agent', f'{CURL_USER_AGENT}'] if CURL_USER_AGENT else []),
         *([] if CHECK_SSL_VALIDITY else ['--insecure']),
-        'https://www.google.com/s2/favicons?domain={}'.format(domain(link.url)),
+        f'https://www.google.com/s2/favicons?domain={domain(link.url)}',
     ]
     status = 'failed'
     timer = TimedProgress(timeout, prefix='      ')

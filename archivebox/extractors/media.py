@@ -26,10 +26,7 @@ def should_save_media(link: Link, out_dir: Optional[Path]=None, overwrite: Optio
         return False
 
     out_dir = out_dir or Path(link.link_dir)
-    if not overwrite and (out_dir / 'media').exists():
-        return False
-
-    return SAVE_MEDIA
+    return False if not overwrite and (out_dir / 'media').exists() else SAVE_MEDIA
 
 @enforce_types
 def save_media(link: Link, out_dir: Optional[Path]=None, timeout: int=MEDIA_TIMEOUT) -> ArchiveResult:
@@ -52,16 +49,15 @@ def save_media(link: Link, out_dir: Optional[Path]=None, timeout: int=MEDIA_TIME
         result = run(cmd, cwd=str(output_path), timeout=timeout + 1)
         chmod_file(output, cwd=str(out_dir))
         if result.returncode:
-            if (b'ERROR: Unsupported URL' in result.stderr
-                or b'HTTP Error 404' in result.stderr
-                or b'HTTP Error 403' in result.stderr
-                or b'URL could be a direct video link' in result.stderr
-                or b'Unable to extract container ID' in result.stderr):
-                # These happen too frequently on non-media pages to warrant printing to console
-                pass
-            else:
+            if (
+                b'ERROR: Unsupported URL' not in result.stderr
+                and b'HTTP Error 404' not in result.stderr
+                and b'HTTP Error 403' not in result.stderr
+                and b'URL could be a direct video link' not in result.stderr
+                and b'Unable to extract container ID' not in result.stderr
+            ):
                 hints = (
-                    'Got youtube-dl response code: {}.'.format(result.returncode),
+                    f'Got youtube-dl response code: {result.returncode}.',
                     *result.stderr.decode().split('\n'),
                 )
                 raise ArchiveError('Failed to save media', hints)

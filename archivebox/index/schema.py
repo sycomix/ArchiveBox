@@ -145,9 +145,7 @@ class Link:
         return Link(**{**self._asdict(), **kwargs})
 
     def __eq__(self, other):
-        if not isinstance(other, Link):
-            return NotImplemented
-        return self.url == other.url
+        return NotImplemented if not isinstance(other, Link) else self.url == other.url
 
     def __gt__(self, other):
         if not isinstance(other, Link):
@@ -276,7 +274,7 @@ class Link:
     @property
     def archive_path(self) -> str:
         from ..config import ARCHIVE_DIR_NAME
-        return '{}/{}'.format(ARCHIVE_DIR_NAME, self.timestamp)
+        return f'{ARCHIVE_DIR_NAME}/{self.timestamp}'
     
     @property
     def archive_size(self) -> float:
@@ -406,8 +404,7 @@ class Link:
             if status is not None:
                 history = list(filter(lambda result: result.status == status, history))
 
-            history = list(history)
-            if history:
+            if history := list(history):
                 latest[archive_method] = history[0].output
             else:
                 latest[archive_method] = None
@@ -423,7 +420,7 @@ class Link:
         canonical = {
             'index_path': 'index.html',
             'favicon_path': 'favicon.ico',
-            'google_favicon_path': 'https://www.google.com/s2/favicons?domain={}'.format(self.domain),
+            'google_favicon_path': f'https://www.google.com/s2/favicons?domain={self.domain}',
             'wget_path': wget_output_path(self),
             'warc_path': 'warc/',
             'singlefile_path': 'singlefile.html',
@@ -432,7 +429,7 @@ class Link:
             'pdf_path': 'output.pdf',
             'screenshot_path': 'screenshot.png',
             'dom_path': 'output.html',
-            'archive_org_path': 'https://web.archive.org/web/{}'.format(self.base_url),
+            'archive_org_path': f'https://web.archive.org/web/{self.base_url}',
             'git_path': 'git/',
             'media_path': 'media/',
             'headers_path': 'headers.json',
