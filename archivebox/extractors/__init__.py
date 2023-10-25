@@ -78,7 +78,7 @@ def archive_link(link: Link, overwrite: bool=False, methods: Optional[Iterable[s
         snapshot = write_link_to_sql_index(link)
 
     ARCHIVE_METHODS = get_default_archive_methods()
-    
+
     if methods:
         ARCHIVE_METHODS = [
             method for method in ARCHIVE_METHODS
@@ -127,10 +127,9 @@ def archive_link(link: Link, overwrite: bool=False, methods: Optional[Iterable[s
                     # print('{black}      X {}{reset}'.format(method_name, **ANSI))
                     stats['skipped'] += 1
             except Exception as e:
-                raise Exception('Exception in archive_methods.save_{}(Link(url={}))'.format(
-                    method_name,
-                    link.url,
-                )) from e
+                raise Exception(
+                    f'Exception in archive_methods.save_{method_name}(Link(url={link.url}))'
+                ) from e
 
         # print('    ', stats)
 
@@ -153,7 +152,7 @@ def archive_link(link: Link, overwrite: bool=False, methods: Optional[Iterable[s
         raise
 
     except Exception as err:
-        print('    ! Failed to archive link: {}: {}'.format(err.__class__.__name__, err))
+        print(f'    ! Failed to archive link: {err.__class__.__name__}: {err}')
         raise
 
     return link
